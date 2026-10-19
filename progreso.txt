@@ -1,0 +1,4 @@
+desbloqueado=1
+completados=1000000000
+sonido=1
+musica=1
