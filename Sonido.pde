@@ -14,6 +14,7 @@ final float FREC_MUESTREO = 22050;    // muestras por segundo
 Clip sonidoSalto, sonidoGema, sonidoInterruptor, sonidoMuerte;
 Clip sonidoPuerta, sonidoVictoria, sonidoClick;
 Clip musicaFondo;
+Clip[] listaSonidos;          // para enviar los sonidos por la red con un número
 boolean audioDisponible = true;
 
 // Formas de onda
@@ -37,10 +38,18 @@ void iniciarSonidos() {
     audioDisponible = false;
     println("No hay audio disponible, el juego seguirá en silencio: " + e);
   }
+  Clip[] todos = {sonidoSalto, sonidoGema, sonidoInterruptor, sonidoMuerte, sonidoPuerta, sonidoVictoria};
+  listaSonidos = todos;
 }
 
 // Reproduce un efecto desde el principio (si el sonido está activado)
 void reproducir(Clip efecto) {
+  // en red, el anfitrión avisa al invitado para que también lo oiga
+  if (modoRed == ANFITRION && efecto != null && efecto != sonidoClick) {
+    for (int i = 0; i < listaSonidos.length; i++) {
+      if (listaSonidos[i] == efecto) enviarEvento("snd|" + i);
+    }
+  }
   if (!sonidoActivado || efecto == null) return;
   efecto.stop();
   efecto.setFramePosition(0);

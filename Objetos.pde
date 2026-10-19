@@ -81,14 +81,20 @@ void matar(Personaje p, char causa) {
   p.vivo = false;
   tiempoMuerte = 75;               // algo más de un segundo antes de reiniciar
   reproducir(sonidoMuerte);
-  String nombre = p.esFuego ? "Fuego" : "Agua";
-  if (causa == 'W') mensajeMuerte = "¡Fuego se ha apagado en el agua!";
-  else if (causa == 'L') mensajeMuerte = "¡Agua se ha evaporado en la lava!";
-  else if (causa == 'V') mensajeMuerte = "¡" + nombre + " ha tocado el ácido!";
-  else mensajeMuerte = "¡" + nombre + " ha caído al vacío!";
+  causaMuerte = causa;            // se guardan para enviarlos por la red
+  muertoEsFuego = p.esFuego;
+  mensajeMuerte = textoMuerte(causa, p.esFuego);
   color c = p.esFuego ? color(255, 130, 30) : color(70, 170, 255);
   crearExplosion(p.x + ANCHO_PJ / 2, min(p.y + ALTO_PJ / 2, height - 10), c, 40);
   crearExplosion(p.x + ANCHO_PJ / 2, min(p.y + ALTO_PJ / 2, height - 10), color(200), 15);   // humo
+}
+
+String textoMuerte(char causa, boolean esFuego) {
+  String nombre = esFuego ? "Fuego" : "Agua";
+  if (causa == 'W') return "¡Fuego se ha apagado en el agua!";
+  if (causa == 'L') return "¡Agua se ha evaporado en la lava!";
+  if (causa == 'V') return "¡" + nombre + " ha tocado el ácido!";
+  return "¡" + nombre + " ha caído al vacío!";
 }
 
 // Chispas sobre la lava y burbujas en el agua y el ácido (solo decoración)
@@ -380,6 +386,8 @@ class Particula {
 }
 
 void crearExplosion(float x, float y, color c, int cantidad) {
+  // en red, el invitado también tiene que ver las explosiones de la partida
+  if (modoRed == ANFITRION && estado == JUGANDO) enviarEvento("exp|" + x + "|" + y + "|" + c + "|" + cantidad);
   for (int i = 0; i < cantidad; i++) {
     float angulo = random(TWO_PI);
     float rapidez = random(1, 4);

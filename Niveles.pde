@@ -313,6 +313,7 @@ ArrayList<int[]> liquidos = new ArrayList<int[]>();   // casillas de lava/agua/√
 // Prepara todo para jugar el nivel indicado (0 a 9)
 void cargarNivel(int numero) {
   nivelActual = numero;
+  idCarga++;            // avisa al invitado de que hay un nivel nuevo (pesta√±a Red)
   String[] filas = MAPAS[numero];
   gemas.clear();
   interruptores.clear();

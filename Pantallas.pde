@@ -86,6 +86,14 @@ void dibujarPausa() {
 }
 
 void clickPausa() {
+  if (modoRed == INVITADO) {               // el invitado pide las acciones al anfitrión
+    if (btnReanudar.encima()) enviarOrden("pausa");
+    else if (btnReiniciarNivel.encima()) enviarOrden("reiniciar");
+    else if (btnPausaSonido.encima()) alternarSonido();
+    else if (btnPausaMusica.encima()) alternarMusica();
+    else if (btnPausaMenu.encima()) desconectar();
+    return;
+  }
   if (btnReanudar.encima()) {
     reproducir(sonidoClick);
     estado = JUGANDO;
@@ -98,7 +106,7 @@ void clickPausa() {
     alternarMusica();
   } else if (btnPausaMenu.encima()) {
     reproducir(sonidoClick);
-    estado = MENU;
+    irAlMenu();
   }
 }
 
@@ -172,6 +180,12 @@ void dibujarVictoria() {
 }
 
 void clickVictoria() {
+  if (modoRed == INVITADO) {
+    if (btnSiguiente.encima()) enviarOrden("siguiente");
+    else if (btnRepetir.encima()) enviarOrden("reiniciar");
+    else if (btnVictoriaMenu.encima()) desconectar();
+    return;
+  }
   if (btnSiguiente.encima()) {
     reproducir(sonidoClick);
     siguienteNivel();
@@ -180,7 +194,7 @@ void clickVictoria() {
     reiniciarNivel();
   } else if (btnVictoriaMenu.encima()) {
     reproducir(sonidoClick);
-    estado = MENU;
+    irAlMenu();
   }
 }
 
@@ -241,15 +255,27 @@ void dibujarVictoriaFinal() {
   text("Has completado los 10 niveles de Elementos: La Aventura", width / 2, 185);
   text("Niveles completados: " + contarCompletados() + " / " + TOTAL_NIVELES, width / 2, 210);
 
+  actualizarTextosBotones();
   btnFinalMenu.dibujar();
-  btnFinalSeleccion.dibujar();
+  if (modoRed == INVITADO) {
+    fill(255, 200);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text("El anfitrión elegirá cómo seguir.", 600, 585);
+  } else {
+    btnFinalSeleccion.dibujar();
+  }
 }
 
 void clickVictoriaFinal() {
+  if (modoRed == INVITADO) {
+    if (btnFinalMenu.encima()) desconectar();
+    return;
+  }
   if (btnFinalMenu.encima()) {
     reproducir(sonidoClick);
     particulas.clear();
-    estado = MENU;
+    irAlMenu();
   } else if (btnFinalSeleccion.encima()) {
     reproducir(sonidoClick);
     particulas.clear();

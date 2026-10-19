@@ -1,4 +1,5 @@
 import javax.sound.sampled.*;   // sonido de Java (ya incluido, no hay que instalarlo)
+import processing.net.*;        // red local (biblioteca incluida con Processing)
 
 
 // =====================================================================
@@ -19,6 +20,8 @@ final int JUGANDO = 3;
 final int PAUSA = 4;
 final int VICTORIA = 5;
 final int VICTORIA_FINAL = 6;
+final int RED = 7;              // sala para crear o unirse a una partida en red
+final int ESPERA = 8;           // el invitado espera a que el anfitrión elija nivel
 int estado = MENU;
 
 // --- Datos del nivel que se está jugando ---
@@ -70,6 +73,7 @@ void setup() {
 
   cargarProgreso();      // lee progreso.txt si existe (pestaña Guardado)
   crearBotones();        // botones de todas las pantallas (pestaña Menu)
+  crearBotonesRed();     // botones de la sala de red (pestaña Red)
   iniciarMenu();         // estrellas y chispas decorativas (pestaña Menu)
   iniciarSonidos();      // crea los efectos y la música (pestaña Sonido)
   actualizarMusica();
@@ -80,14 +84,21 @@ void setup() {
 // 3. BUCLE PRINCIPAL
 // =====================================================================
 void draw() {
+  actualizarRed();           // recibe los mensajes de la red (si se juega online)
+
   if (estado == MENU) {
     dibujarMenu();
   } else if (estado == SELECCION) {
     dibujarSeleccion();
   } else if (estado == AYUDA) {
     dibujarAyuda();
+  } else if (estado == RED) {
+    dibujarRed();
+  } else if (estado == ESPERA) {
+    dibujarEspera();
   } else if (estado == JUGANDO) {
-    actualizarJuego();
+    if (modoRed == INVITADO) actualizarJuegoInvitado();   // el invitado solo dibuja
+    else actualizarJuego();
     dibujarJuego();
   } else if (estado == PAUSA) {
     dibujarJuego();          // el nivel se ve quieto detrás del menú de pausa
@@ -99,6 +110,8 @@ void draw() {
   } else if (estado == VICTORIA_FINAL) {
     dibujarVictoriaFinal();
   }
+
+  enviarRed();               // envía el estado (anfitrión) o las teclas (invitado)
 }
 
 // Un paso de la partida: mueve todo y comprueba las reglas
@@ -114,8 +127,15 @@ void actualizarJuego() {
   }
 
   for (PlataformaMovil p : plataformas) p.actualizar();   // primero las plataformas (llevan a los personajes)
-  fuego.actualizar(teclaA, teclaD, teclaW);
-  agua.actualizar(teclaIzq, teclaDer, teclaArriba);
+  if (modoRed == ANFITRION) {
+    // En red, el anfitrión maneja a Fuego con W A D o con las flechas,
+    // y Agua se mueve con las teclas que llegan del otro ordenador
+    fuego.actualizar(teclaA || teclaIzq, teclaD || teclaDer, teclaW || teclaArriba);
+    agua.actualizar(remotoIzq, remotoDer, remotoSalto);
+  } else {
+    fuego.actualizar(teclaA, teclaD, teclaW);
+    agua.actualizar(teclaIzq, teclaDer, teclaArriba);
+  }
 
   comprobarGemas();
   actualizarPuertas();
@@ -148,13 +168,30 @@ void keyPressed() {
   // ESC normalmente cierra Processing: lo "anulamos" con key = 0
   if (key == ESC) {
     key = 0;
-    if (estado == JUGANDO) pausar();
+    if (modoRed == INVITADO) {
+      if (estado == JUGANDO || estado == PAUSA) enviarOrden("pausa");   // se lo pide al anfitrión
+    } else if (estado == JUGANDO) pausar();
     else if (estado == PAUSA) estado = JUGANDO;
-    else if (estado == SELECCION || estado == AYUDA) estado = MENU;
+    else if (estado == SELECCION) irAlMenu();
+    else if (estado == AYUDA || (estado == RED && modoRed == LOCAL)) estado = MENU;
+    return;
+  }
+
+  // En la sala de red el teclado sirve para escribir la IP
+  if (estado == RED && modoRed == LOCAL) {
+    escribirIP();
     return;
   }
 
   cambiarTecla(true);
+
+  // El invitado no controla la partida: pide las acciones al anfitrión
+  if (modoRed == INVITADO) {
+    if ((key == 'r' || key == 'R') && (estado == JUGANDO || estado == PAUSA)) enviarOrden("reiniciar");
+    if ((key == 'p' || key == 'P') && (estado == JUGANDO || estado == PAUSA)) enviarOrden("pausa");
+    if ((key == ENTER || key == RETURN) && estado == VICTORIA) enviarOrden("siguiente");
+    return;
+  }
 
   if (estado == JUGANDO && (key == 'r' || key == 'R')) reiniciarNivel();
   if (estado == JUGANDO && (key == 'p' || key == 'P')) pausar();
@@ -191,7 +228,12 @@ void mousePressed() {
   if (estado == MENU) clickMenu();
   else if (estado == SELECCION) clickSeleccion();
   else if (estado == AYUDA) clickAyuda();
-  else if (estado == JUGANDO) { if (encimaBotonPausa()) pausar(); }
+  else if (estado == RED) clickRed();
+  else if (estado == ESPERA) clickEspera();
+  else if (estado == JUGANDO && encimaBotonPausa()) {
+    if (modoRed == INVITADO) enviarOrden("pausa");
+    else pausar();
+  }
   else if (estado == PAUSA) clickPausa();
   else if (estado == VICTORIA) clickVictoria();
   else if (estado == VICTORIA_FINAL) clickVictoriaFinal();

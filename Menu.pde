@@ -47,7 +47,7 @@ class BotonMenu {
 }
 
 // --- Botones de todas las pantallas ---
-BotonMenu btnJugar, btnSeleccion, btnAyuda, btnSonido, btnMusica, btnBorrar, btnSalir;
+BotonMenu btnJugar, btnJugarRed, btnSeleccion, btnAyuda, btnSonido, btnMusica, btnBorrar, btnSalir;
 BotonMenu btnVolver;
 BotonMenu btnReanudar, btnReiniciarNivel, btnPausaSonido, btnPausaMusica, btnPausaMenu;
 BotonMenu btnSiguiente, btnRepetir, btnVictoriaMenu;
@@ -64,13 +64,14 @@ void crearBotones() {
   color gris = color(90, 90, 110);
 
   // Menú principal
-  btnJugar     = new BotonMenu(330, 200, 300, 52, "Jugar", naranja);
-  btnSeleccion = new BotonMenu(330, 262, 300, 52, "Seleccionar nivel", azul);
-  btnAyuda     = new BotonMenu(330, 324, 300, 52, "Cómo jugar", morado);
-  btnSonido    = new BotonMenu(330, 386, 145, 44, "", verde);
-  btnMusica    = new BotonMenu(485, 386, 145, 44, "", verde);
-  btnBorrar    = new BotonMenu(330, 440, 190, 40, "Borrar progreso", gris);
-  btnSalir     = new BotonMenu(530, 440, 100, 40, "Salir", gris);
+  btnJugar     = new BotonMenu(330, 194, 300, 46, "Jugar", naranja);
+  btnJugarRed  = new BotonMenu(330, 248, 300, 46, "Jugar en red", color(200, 70, 120));
+  btnSeleccion = new BotonMenu(330, 302, 300, 46, "Seleccionar nivel", azul);
+  btnAyuda     = new BotonMenu(330, 356, 300, 46, "Cómo jugar", morado);
+  btnSonido    = new BotonMenu(330, 410, 145, 38, "", verde);
+  btnMusica    = new BotonMenu(485, 410, 145, 38, "", verde);
+  btnBorrar    = new BotonMenu(330, 456, 190, 34, "Borrar progreso", gris);
+  btnSalir     = new BotonMenu(530, 456, 100, 34, "Salir", gris);
 
   btnVolver = new BotonMenu(380, 570, 200, 46, "Volver", gris);
 
@@ -100,6 +101,13 @@ void actualizarTextosBotones() {
   btnPausaSonido.texto = btnSonido.texto;
   btnPausaMusica.texto = btnMusica.texto;
   btnBorrar.texto = confirmarBorrado ? "¿Seguro? Pulsa otra vez" : "Borrar progreso";
+  // en red, "Menú principal" significa volver a la sala o salir de la partida
+  String textoSalir = "Menú principal";
+  if (modoRed == ANFITRION) textoSalir = "Sala de red";
+  if (modoRed == INVITADO) textoSalir = "Salir de la partida";
+  btnPausaMenu.texto = textoSalir;
+  btnVictoriaMenu.texto = textoSalir;
+  btnFinalMenu.texto = textoSalir;
 }
 
 // --- Decoración animada del menú ---
@@ -183,8 +191,8 @@ void dibujarEscenaMenu() {
   for (int i = 0; i < 4; i++) rect(400 + i * 40, suelo + 30, 38, 2);
 
   // personajes saltando por turnos
-  float saltoFuego = abs(sin(frameCount * 0.05)) * 25;
-  float saltoAgua = abs(sin(frameCount * 0.05 + HALF_PI)) * 25;
+  float saltoFuego = abs(sin(frameCount * 0.05)) * 12;
+  float saltoAgua = abs(sin(frameCount * 0.05 + HALF_PI)) * 12;
   dibujarCuerpo(430, suelo - ALTO_PJ * 1.6 - saltoFuego, true, 1, frameCount * 0.2, saltoFuego > 3, 1.6);
   dibujarCuerpo(505, suelo - ALTO_PJ * 1.6 - saltoAgua, false, -1, frameCount * 0.2, saltoAgua > 3, 1.6);
 }
@@ -244,6 +252,7 @@ void dibujarMenu() {
   text("La Aventura", width / 2, 150);
 
   btnJugar.dibujar();
+  btnJugarRed.dibujar();
   btnSeleccion.dibujar();
   btnAyuda.dibujar();
   btnSonido.dibujar();
@@ -262,6 +271,10 @@ void clickMenu() {
   if (btnJugar.encima()) {
     reproducir(sonidoClick);
     cargarNivel(nivelDesbloqueado);
+  } else if (btnJugarRed.encima()) {
+    reproducir(sonidoClick);
+    mensajeRed = "";
+    estado = RED;
   } else if (btnSeleccion.encima()) {
     reproducir(sonidoClick);
     estado = SELECCION;
@@ -515,7 +528,7 @@ void clickSeleccion() {
   }
   if (btnVolver.encima()) {
     reproducir(sonidoClick);
-    estado = MENU;
+    irAlMenu();
   }
 }
 
