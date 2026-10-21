@@ -7,7 +7,7 @@ final float ANCHO_PJ = 22;        // ancho de la "caja" de colisión
 final float ALTO_PJ = 28;         // alto de la "caja" de colisión
 final float VELOCIDAD = 3;        // velocidad al caminar
 final float GRAVEDAD = 0.5;       // cuánto aumenta la velocidad de caída cada frame
-final float FUERZA_SALTO = 11;    // velocidad inicial del salto (sube algo más de 3 casillas)
+final float FUERZA_SALTO = 10.2;    // velocidad inicial del salto (sube algo más de 3 casillas)
 final float CAIDA_MAXIMA = 10;    // velocidad máxima de caída
 final float MARGEN_PELIGRO = 6;   // píxeles de cada lado que pueden "sobrar" sobre un líquido sin morir
 
