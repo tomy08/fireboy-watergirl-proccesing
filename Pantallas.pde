@@ -249,10 +249,10 @@ void dibujarVictoriaFinal() {
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(26);
-  text("Fuego y Agua han conquistado el Templo de los Elementos", width / 2, 150);
+  text("Fuego y Agua han conquistado el Templo de la 35", width / 2, 150);
   textSize(17);
   fill(255, 210);
-  text("Has completado los 10 niveles de Elementos: La Aventura", width / 2, 185);
+  text("Has completado los 10 niveles de Fireboy & Watergirl: La 35° Aventura", width / 2, 185);
   text("Niveles completados: " + contarCompletados() + " / " + TOTAL_NIVELES, width / 2, 210);
 
   actualizarTextosBotones();
