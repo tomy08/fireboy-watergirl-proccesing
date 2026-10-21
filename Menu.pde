@@ -245,7 +245,7 @@ void dibujarMenu() {
   dibujarFondoMenu();
   dibujarEscenaMenu();
 
-  dibujarTitulo("ELEMENTOS", 85, 78);
+  dibujarTitulo("Fireboy & Watergirl", 85, 78);
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(30);
