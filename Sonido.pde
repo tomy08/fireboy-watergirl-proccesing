@@ -21,34 +21,12 @@ void iniciarSonidos() {
   musicaFondo = crearClip(crearMusica());
 }
 
-// Reproduce un efecto desde el principio (si el sonido está activado)
+// Reproduce un efecto desde el principio
 void reproducir(Clip efecto) {
-  if (!sonidoActivado || efecto == null) return;
+  if (efecto == null) return;
   efecto.stop();
   efecto.setFramePosition(0);
   efecto.start();
-}
-
-// Enciende o apaga la música según la opción elegida
-void actualizarMusica() {
-  if (musicaFondo == null) return;
-  if (musicaActivada) musicaFondo.loop(Clip.LOOP_CONTINUOUSLY);
-  else musicaFondo.stop();
-}
-
-void detenerMusica() {
-  if (musicaFondo != null) musicaFondo.stop();
-}
-
-void alternarSonido() {
-  sonidoActivado = !sonidoActivado;
-  guardarProgreso();
-}
-
-void alternarMusica() {
-  musicaActivada = !musicaActivada;
-  actualizarMusica();
-  guardarProgreso();
 }
 
 // Crea un tono "retro" (onda cuadrada) que va de frecInicio a frecFin

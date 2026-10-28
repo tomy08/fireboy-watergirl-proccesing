@@ -20,9 +20,7 @@ void guardarProgreso() {
   }
   String[] lineas = {
     "desbloqueado=" + nivelDesbloqueado,
-    "completados=" + completados,
-    "sonido=" + (sonidoActivado ? 1 : 0),
-    "musica=" + (musicaActivada ? 1 : 0)
+    "completados=" + completados
   };
   try {
     saveStrings(sketchPath(ARCHIVO_PROGRESO), lineas);
@@ -49,10 +47,6 @@ void cargarProgreso() {
       for (int i = 0; i < TOTAL_NIVELES && i < valor.length(); i++) {
         nivelCompletado[i] = valor.charAt(i) == '1';
       }
-    } else if (nombre.equals("sonido")) {
-      sonidoActivado = valor.equals("1");
-    } else if (nombre.equals("musica")) {
-      musicaActivada = valor.equals("1");
     }
   }
 }

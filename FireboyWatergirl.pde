@@ -39,8 +39,6 @@ boolean teclaIzq, teclaDer, teclaArriba;         // Agua
 // Progreso guardado
 int nivelDesbloqueado = 0;                       // último nivel desbloqueado (0 a 9)
 boolean[] nivelCompletado = new boolean[TOTAL_NIVELES];
-boolean sonidoActivado = true;
-boolean musicaActivada = true;
 
 
 // =====================================================================
@@ -52,7 +50,7 @@ void setup() {
   cargarProgreso();      // pestaña Guardado
   crearBotones();        // pestaña Menu
   iniciarSonidos();      // pestaña Sonido
-  actualizarMusica();
+  if (musicaFondo != null) musicaFondo.loop(Clip.LOOP_CONTINUOUSLY);   // música de fondo en bucle
 }
 
 

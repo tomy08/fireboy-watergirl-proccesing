@@ -34,7 +34,7 @@ class BotonMenu {
 }
 
 // Botones de todas las pantallas
-BotonMenu btnJugar, btnJugarRed, btnSeleccion, btnAyuda, btnSonido, btnMusica, btnVolver;
+BotonMenu btnJugar, btnJugarRed, btnSeleccion, btnAyuda, btnVolver;
 BotonMenu btnPausaHUD, btnReanudar, btnReiniciarNivel, btnPausaMenu;
 BotonMenu btnSiguiente, btnRepetir, btnVictoriaMenu;
 BotonMenu btnCrear, btnUnirse, btnRedJugar, btnRedElegir, btnDesconectar;
@@ -46,8 +46,6 @@ void crearBotones() {
   btnJugarRed  = new BotonMenu(330, 225, 300, 45, "Jugar en red");
   btnSeleccion = new BotonMenu(330, 280, 300, 45, "Seleccionar nivel");
   btnAyuda     = new BotonMenu(330, 335, 300, 45, "Cómo jugar");
-  btnSonido    = new BotonMenu(330, 390, 145, 45, "");
-  btnMusica    = new BotonMenu(485, 390, 145, 45, "");
   btnVolver    = new BotonMenu(380, 575, 200, 45, "Volver");
 
   // Selección de niveles: dos columnas de cinco
@@ -94,18 +92,14 @@ void dibujarMenu() {
   textSize(18);
   text("Niveles completados: " + contarCompletados() + " / " + TOTAL_NIVELES, width / 2, 130);
 
-  // textos que dependen del progreso y de las opciones
+  // el botón Jugar dice hasta dónde se ha llegado
   if (nivelDesbloqueado == 0) btnJugar.texto = "Jugar";
   else btnJugar.texto = "Continuar (nivel " + (nivelDesbloqueado + 1) + ")";
-  btnSonido.texto = sonidoActivado ? "Sonido: SÍ" : "Sonido: NO";
-  btnMusica.texto = musicaActivada ? "Música: SÍ" : "Música: NO";
 
   btnJugar.dibujar();
   btnJugarRed.dibujar();
   btnSeleccion.dibujar();
   btnAyuda.dibujar();
-  btnSonido.dibujar();
-  btnMusica.dibujar();
 }
 
 void clickMenu() {
@@ -116,8 +110,6 @@ void clickMenu() {
   }
   else if (btnSeleccion.encima()) estado = SELECCION;
   else if (btnAyuda.encima()) estado = AYUDA;
-  else if (btnSonido.encima()) alternarSonido();
-  else if (btnMusica.encima()) alternarMusica();
 }
 
 int contarCompletados() {
