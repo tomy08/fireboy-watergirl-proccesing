@@ -7,7 +7,7 @@ final float ANCHO_PJ = 22;        // ancho de la "caja" de colisión
 final float ALTO_PJ = 28;         // alto de la "caja" de colisión
 final float VELOCIDAD = 3;        // velocidad al caminar
 final float GRAVEDAD = 0.5;       // cuánto aumenta la velocidad de caída cada frame
-final float FUERZA_SALTO = 10.2;    // velocidad inicial del salto (sube algo más de 3 casillas)
+final float FUERZA_SALTO = 10.2;  // velocidad inicial del salto
 final float CAIDA_MAXIMA = 10;    // velocidad máxima de caída
 final float MARGEN_PELIGRO = 6;   // píxeles de cada lado que pueden "sobrar" sobre un líquido sin morir
 
@@ -18,8 +18,6 @@ class Personaje {
   boolean esFuego;         // true = Fuego, false = Agua
   boolean vivo = true;
   boolean enSalida = false;
-  int direccion = 1;       // 1 = mira a la derecha, -1 = a la izquierda
-  float paso = 0;          // contador para animar las piernas
 
   Personaje(boolean esFuego, float x, float y) {
     this.esFuego = esFuego;
@@ -34,8 +32,6 @@ class Personaje {
     vx = 0;
     if (izquierda) vx -= VELOCIDAD;
     if (derecha) vx += VELOCIDAD;
-    if (vx > 0) direccion = 1;
-    if (vx < 0) direccion = -1;
 
     // Solo se puede saltar si estamos apoyados en algo
     if (saltar && enSuelo) {
@@ -51,9 +47,6 @@ class Personaje {
     moverX(vx);
     enSuelo = false;
     moverY(vy);
-
-    if (vx != 0 && enSuelo) paso += 0.35;
-    else paso = 0;
   }
 
   // ¿Está tocando el rectángulo indicado?
@@ -74,19 +67,13 @@ class Personaje {
       && x + ANCHO_PJ > p.x && x < p.x + p.ancho;
   }
 
-  // La plataforma móvil desplaza al personaje que lleva encima
-  void arrastrar(float dx, float dy) {
-    moverX(dx);
-    moverY(dy);
-  }
-
   // Devuelve qué lo ha matado: 'L' lava, 'W' agua, 'V' ácido, 'v' vacío, o ' ' si nada.
   // Se mira la fila de casillas que hay justo debajo de los pies.
   char tocaPeligro() {
     if (!vivo) return ' ';
     if (y > height + 50) return 'v';
     int fila = floor((y + ALTO_PJ) / TAM);
-    int colIzq = floor((x + MARGEN_PELIGRO) / TAM);     // margen a cada lado: hay que pisar el líquido de verdad
+    int colIzq = floor((x + MARGEN_PELIGRO) / TAM);
     int colDer = floor((x + ANCHO_PJ - MARGEN_PELIGRO - 0.01) / TAM);
     for (int c = colIzq; c <= colDer; c++) {
       char t = casilla(c, fila);
@@ -98,7 +85,7 @@ class Personaje {
   }
 
   void dibujar() {
-    dibujarCuerpo(x, y, esFuego, direccion, paso, !enSuelo, 1.0);
+    dibujarPersonaje(x, y, esFuego);
   }
 
 
@@ -177,7 +164,7 @@ char casilla(int col, int fila) {
   return mapa[fila][col];
 }
 
-// ¿Se puede atravesar la casilla? Los líquidos son suelo (se camina por encima).
+// ¿Es una casilla sólida? Los líquidos son suelo (se camina por encima).
 boolean esSolido(int col, int fila) {
   char c = casilla(col, fila);
   if (c == '#' || c == 'L' || c == 'W' || c == 'V') return true;
@@ -186,67 +173,22 @@ boolean esSolido(int col, int fila) {
   return false;
 }
 
-
-// ---------------------------------------------------------------------
-// Dibujo de los personajes (se usa en el juego, el menú y la victoria)
-// x, y: esquina superior izquierda de la caja de colisión
-// ---------------------------------------------------------------------
-void dibujarCuerpo(float px, float py, boolean esFuego, int dir, float paso, boolean enAire, float escala) {
-  color principal = esFuego ? color(240, 90, 30) : color(40, 140, 240);
-  color oscuro = esFuego ? color(160, 40, 20) : color(20, 70, 170);
-  color claro = esFuego ? color(255, 210, 70) : color(170, 225, 255);
-
-  pushMatrix();
-  translate(px + ANCHO_PJ / 2 * escala, py + ALTO_PJ * escala);   // origen: entre los pies
-  scale(escala);
-  if (enAire) scale(0.92, 1.08);                                  // se estira al saltar
+// Dibuja a Fuego o a Agua: cuerpo, llama o gota, y ojos.
+// (x, y) es la esquina superior izquierda de la caja de colisión.
+void dibujarPersonaje(float x, float y, boolean esFuego) {
   noStroke();
-
-  // aura
-  fill(principal, 45);
-  ellipse(0, -16, 44, 44);
-
-  // piernas (se balancean al caminar)
-  float balanceo = sin(paso) * 3;
-  fill(oscuro);
-  rect(-8 + balanceo, -7, 6, 7, 2);
-  rect(2 - balanceo, -7, 6, 7, 2);
-
-  // cabeza: llama para Fuego, gota para Agua
-  float t = frameCount * 0.25;
+  if (esFuego) fill(240, 90, 30);
+  else fill(40, 140, 240);
+  rect(x, y + 6, ANCHO_PJ, ALTO_PJ - 6, 6);                          // cuerpo
+  triangle(x, y + 8, x + ANCHO_PJ, y + 8, x + ANCHO_PJ / 2, y - 10);  // llama o gota
   if (esFuego) {
-    fill(255, 120, 20);
-    triangle(-11, -21, -2, -21, -8 + sin(t) * 2, -35 + sin(t * 1.3) * 3);
-    triangle(-5, -22, 6, -22, 1 + sin(t + 1) * 2, -42 + sin(t * 1.7) * 3);
-    triangle(2, -21, 11, -21, 8 + sin(t + 2) * 2, -34 + sin(t * 1.1) * 3);
-    fill(claro);
-    triangle(-5, -22, 5, -22, sin(t) * 1.5, -33 + sin(t * 2) * 2);
-  } else {
-    fill(principal);
-    triangle(-10, -19, 10, -19, -dir * 3, -41);
-    fill(claro, 200);
-    ellipse(-4, -28, 4, 7);
+    fill(255, 210, 60);
+    triangle(x + 5, y + 8, x + 17, y + 8, x + 11, y - 2);             // centro amarillo de la llama
   }
-
-  // cuerpo
-  fill(principal);
-  rect(-11, -26, 22, 20, 8);
-  fill(claro, 90);
-  rect(-8, -24, 7, 5, 3);       // brillo
-
-  // ojos (miran hacia donde camina)
   fill(255);
-  ellipse(-4 + dir * 2, -17, 7, 8);
-  ellipse(4 + dir * 2, -17, 7, 8);
-  fill(30);
-  ellipse(-4 + dir * 3, -16.5, 3.5, 4.5);
-  ellipse(4 + dir * 3, -16.5, 3.5, 4.5);
-
-  // boca sonriente
-  noFill();
-  stroke(oscuro);
-  strokeWeight(1.5);
-  arc(dir * 2, -12, 8, 5, 0, PI);
-  noStroke();
-  popMatrix();
+  ellipse(x + 7, y + 14, 7, 8);                                       // ojos
+  ellipse(x + 15, y + 14, 7, 8);
+  fill(0);
+  ellipse(x + 7, y + 15, 3, 4);
+  ellipse(x + 15, y + 15, 3, 4);
 }

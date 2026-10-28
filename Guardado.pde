@@ -56,10 +56,3 @@ void cargarProgreso() {
     }
   }
 }
-
-// Vuelve a dejar el juego como nuevo (mantiene las opciones de sonido)
-void borrarProgreso() {
-  nivelDesbloqueado = 0;
-  for (int i = 0; i < TOTAL_NIVELES; i++) nivelCompletado[i] = false;
-  guardarProgreso();
-}
