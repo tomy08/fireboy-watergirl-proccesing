@@ -254,34 +254,35 @@ String[] NIVEL_9 = {
 };
 int[][] MOVILES_9 = { {1, 12, 4, 1, 5} };
 
-// ---------- NIVEL 10: El templo final ----------
+
 String[] NIVEL_10 = {
   "##############################",   // 0
-  "#....r.....x.....b...........#",   // 1
-  "#..............#.............#",   // 2
-  "#.F......LLL..#...WWW.....A..#",   // 3
-  "######LLL######WWW############",   // 4
-  "#........#........#..........#",   // 5
-  "#..r.....#...y....#......b...#",   // 6
-  "#........Y........#..........#",   // 7
-  "#....####Y####....#.....######",   // 8
-  "#....X...Y....b...#.....r....#",   // 9
-  "#....X..........x.#..........#",   // 10
-  "#....X...r........#....b.....#",   // 11
-  "#....X#############.....######",   // 12
-  "#..x................y........#",   // 13
-  "###VVVV####....####LLLL#######",   // 14
-  "#......r.....b...............#",   // 15
-  "#.........####...............#",   // 16
-  "#f........####..........a....#",   // 17
-  "#######WW##########.VVV#######",   // 18
-  "##############################"   // 19
+  "#..........Y......X..........#",   // 1
+  "#..........Y......X..........#",   // 2
+  "#..........Y......X..........#",   // 3  techo de la cámara sellada
+  "#......r...YxF.A..X..b..y....#",   // 4  cámara: puerta Y, botón x, salidas, puerta X, botón y
+  "##...####################...##",   // 5  suelo de la cámara (agujeros a los dos lados)
+  "#............................#",   // 6
+  "#..##....................##..#",   // 7  últimas baldosas bajo los agujeros
+  "#r..........................b#",   // 8
+  "##W#......................#L##",   // 9  baldosa trampa (agua / lava) en medio
+  "#............................#",   // 10
+  "#...###..r..........b..###...#",   // 11 descansillos y gemas
+  "#.......####......####.......#",   // 12 losas flotantes del centro
+  "#.....#W#............#L#.....#",   // 13 baldosa trampa en medio
+  "#..r......................b..#",   // 14
+  "#..#W#..................#L#..#",   // 15 baldosa trampa en medio
+  "#.............rb.............#",   // 16 gemas del pilar central
+  "###...........##...........###",   // 17 arranque de las torres y pilar central
+  "#..f..........##..........a..#",   // 18 salida de los personajes y pilar
+  "#####VVV....VV##VVV...VVV#####"    // 19 lago de ácido con dos pozos sin fondo
 };
+// Dos lanzaderas a ras del lago (fila 18): la de la izquierda va de la
+// isla de Fuego al pilar central y la de la derecha vuelve a la isla de Agua.
+// Solo quien domine el tiempo de espera conseguirá las gemas del pilar.
 int[][] MOVILES_10 = {
-  {7, 5, 3, 17, 5},
-  {19, 5, 2, 19, 13},
-  {14, 13, 3, 23, 13},
-  {7, 16, 2, 20, 16}
+  {6, 18, 3, 11, 18},
+  {22, 18, 3, 17, 18}
 };
 
 String[][] MAPAS = {
@@ -296,7 +297,7 @@ int[][][] MOVILES = {
 
 String[] NOMBRES_NIVELES = {
   "El comienzo", "Primeros peligros", "Saltos y alturas", "Las gemas", "Los interruptores",
-  "Caminos separados", "Plataformas móviles", "El laberinto", "La gran prueba", "El templo final"
+  "Caminos separados", "Plataformas móviles", "El laberinto", "La gran prueba", "El corazón del templo"
 };
 
 // Prepara todo para jugar el nivel indicado (0 a 9)

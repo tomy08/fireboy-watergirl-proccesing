@@ -1,4 +1,4 @@
-desbloqueado=1
-completados=1000000000
+desbloqueado=9
+completados=1111111110
 sonido=1
 musica=1
