@@ -40,6 +40,11 @@ boolean teclaIzq, teclaDer, teclaArriba;         // Agua
 int nivelDesbloqueado = 0;                       // último nivel desbloqueado (0 a 9)
 boolean[] nivelCompletado = new boolean[TOTAL_NIVELES];
 
+// Fondo del templo: imagen opcional en data/fondo.png (si no existe, color liso)
+PImage fondoTemplo;
+// Fondo del menú principal: imagen opcional en data/fondoMenu.png (incluye título y personajes)
+PImage fondoMenu;
+
 
 // =====================================================================
 // 2. CONFIGURACIÓN INICIAL
@@ -47,6 +52,8 @@ boolean[] nivelCompletado = new boolean[TOTAL_NIVELES];
 void setup() {
   size(960, 640);
   frameRate(60);
+  fondoTemplo = loadImage("fondo.png");   // imagen de fondo (data/fondo.png); null si no está
+  fondoMenu = loadImage("fondoMenu.png"); // fondo del menú (data/fondoMenu.png); null si no está
   cargarProgreso();      // pestaña Guardado
   crearBotones();        // pestaña Menu
   iniciarSonidos();      // pestaña Sonido
@@ -109,7 +116,8 @@ void actualizarJuego() {
 
 // Dibuja el nivel completo
 void dibujarJuego() {
-  background(60, 90, 130);
+  if (fondoTemplo != null) image(fondoTemplo, 0, 0, width, height);   // fondo del templo
+  else background(60, 90, 130);                                        // color liso si falta la imagen
   dibujarMapa();
   dibujarSalidas();
   for (Interruptor i : interruptores) i.dibujar();

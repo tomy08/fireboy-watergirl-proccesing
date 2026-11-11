@@ -42,10 +42,10 @@ BotonMenu[] botonesNivel = new BotonMenu[TOTAL_NIVELES];
 
 void crearBotones() {
   // Menú principal
-  btnJugar     = new BotonMenu(330, 170, 300, 45, "Jugar");
-  btnJugarRed  = new BotonMenu(330, 225, 300, 45, "Jugar en red");
-  btnSeleccion = new BotonMenu(330, 280, 300, 45, "Seleccionar nivel");
-  btnAyuda     = new BotonMenu(330, 335, 300, 45, "Cómo jugar");
+  btnJugar     = new BotonMenu(330, 310, 300, 45, "Jugar");
+  btnJugarRed  = new BotonMenu(330, 365, 300, 45, "Jugar en red");
+  btnSeleccion = new BotonMenu(330, 420, 300, 45, "Seleccionar nivel");
+  btnAyuda     = new BotonMenu(330, 475, 300, 45, "Cómo jugar");
   btnVolver    = new BotonMenu(380, 575, 200, 45, "Volver");
 
   // Selección de niveles: dos columnas de cinco
@@ -71,26 +71,14 @@ void crearBotones() {
 }
 
 void dibujarMenu() {
-  background(40, 30, 70);
+  // el fondo generado incluye el título y los personajes; si falta el archivo, color liso
+  if (fondoMenu != null) image(fondoMenu, 0, 0, width, height);
+  else background(40, 30, 70);
 
-  // decoración: lava, agua y los dos personajes
-  noStroke();
-  fill(255, 90, 20);
-  rect(0, 590, 400, 50);
-  fill(30, 120, 230);
-  rect(560, 590, 400, 50);
-  fill(120, 95, 70);
-  rect(400, 590, 160, 50);
-  dibujarPersonaje(440, 562, true);
-  dibujarPersonaje(500, 562, false);
-
-  fill(255, 150, 50);
-  textAlign(CENTER, CENTER);
-  textSize(56);
-  text("Fireboy & Watergirl", width / 2, 75);
   fill(255);
+  textAlign(CENTER, CENTER);
   textSize(18);
-  text("Niveles completados: " + contarCompletados() + " / " + TOTAL_NIVELES, width / 2, 130);
+  text("Niveles completados: " + contarCompletados() + " / " + TOTAL_NIVELES, width / 2, 550);
 
   // el botón Jugar dice hasta dónde se ha llegado
   if (nivelDesbloqueado == 0) btnJugar.texto = "Jugar";
